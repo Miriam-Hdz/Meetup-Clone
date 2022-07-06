@@ -2,7 +2,7 @@
 
 ## Database Schema Design
 
-![alt text](./DBschema4.PNG)
+![alt text](./DBschema5.PNG)
 
 ## API Documentation
 
