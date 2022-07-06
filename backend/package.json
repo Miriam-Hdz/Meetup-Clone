@@ -27,11 +27,11 @@
     "morgan": "^1.10.0",
     "per-env": "^1.0.2",
     "sequelize": "^6.21.2",
-    "sequelize-cli": "^6.4.1",
-    "sqlite3": "^5.0.8"
+    "sequelize-cli": "^6.4.1"
   },
   "devDependencies": {
     "dotenv-cli": "^5.1.0",
-    "nodemon": "^2.0.18"
+    "nodemon": "^2.0.18",
+    "sqlite3": "^5.0.8"
   }
 }
