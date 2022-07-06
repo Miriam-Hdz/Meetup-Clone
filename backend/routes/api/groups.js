@@ -5,6 +5,7 @@ const { Group } = require('../../db/models');
 
 const router = express.Router();
 
+//get all groups
 router.get('/', async (req, res) => {
     const groups = await Group.findAll()
 
