@@ -1,7 +1,7 @@
 const express = require('express');
 
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
-const { Group } = require('../../db/models/group');
+const { Group } = require('../../db/models');
 
 const router = express.Router();
 

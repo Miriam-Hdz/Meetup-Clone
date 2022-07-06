@@ -11,8 +11,7 @@ module.exports = {
         city: "New York",
         state: "NY",
         num_members: 10,
-        preview_image: "image url",
-        organizer_id: 1,
+        organizer_id: 1
       }
     ], {});
   },

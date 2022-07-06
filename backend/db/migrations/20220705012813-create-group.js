@@ -40,9 +40,6 @@ module.exports = {
       num_members: {
         type: Sequelize.INTEGER
       },
-      preview_image: {
-        type: Sequelize.STRING
-      },
       organizer_id: {
         type: Sequelize.INTEGER
       }
