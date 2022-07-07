@@ -44,6 +44,14 @@ module.exports = (sequelize, DataTypes) => {
 
     static associate(models) {
       // define association here
+      User.hasMany(
+        models.Member,
+        { foreignKey: 'member_id', onDelete: 'CASCADE', hook: true }
+      );
+      User.hasMany(
+        models.Group,
+        { foreignKey: 'organizer_id', onDelete: 'CASCADE', hooks: true }
+      );
     }
   }
   User.init({
