@@ -11,20 +11,25 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Member.belongsTo(
-        models.Group,
-        { foreignKey: 'group_id'}
-      );
-      Member.belongsTo(
-        models.User,
-        { foreignKey: 'member_id' }
-      );
     }
   }
   Member.init({
     status: DataTypes.STRING,
-    member_id: DataTypes.INTEGER,
-    group_id: DataTypes.INTEGER
+    organizer: DataTypes.BOOLEAN,
+    memberId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'Members',
+        key: 'id'
+      }
+    },
+    groupId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'Groups',
+        key: 'id'
+      }
+    }
   }, {
     sequelize,
     modelName: 'Member',

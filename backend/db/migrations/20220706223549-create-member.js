@@ -14,21 +14,16 @@ module.exports = {
       status: {
         type: Sequelize.STRING
       },
+      organizer: {
+        type: Sequelize.BOOLEAN
+      },
       memberId: {
         type: Sequelize.INTEGER,
-        references: {
-          model: 'Members',
-          key: 'id'
-        },
-        onDelete: 'cascade'
+        references: { model: 'Members' }
       },
       groupId: {
         type: Sequelize.INTEGER,
-        references: {
-          model: 'Groups',
-          key: 'id'
-        },
-        onDelete: 'cascade'
+        references: { model: 'Groups' }
       },
       createdAt: {
         allowNull: false,

@@ -37,10 +37,10 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
-      num_members: {
+      numMembers: {
         type: Sequelize.INTEGER
       },
-      organizer_id: {
+      organizerId: {
         type: Sequelize.INTEGER
       }
     });
