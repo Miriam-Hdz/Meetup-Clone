@@ -81,6 +81,7 @@ router.get('/groups', async (req, res) => {
 
 router.post('/groups', async (req, res) => {
   const { name, about, type, private, city, state } = req.body;
+  const { user } = req;
 
   try {
     const newGroup = await Group.create({
@@ -89,11 +90,20 @@ router.post('/groups', async (req, res) => {
       type: type,
       private: private,
       city: city,
-      state: state
+      state: state,
+      numMembers: 1,
+      organizerId: user.id
+    });
+
+    const group = await Group.findOne({
+      attributes: {exclude: ['numMembers']},
+      where: {
+        id: newGroup.id
+      }
     });
 
     res.status(201);
-    return res.json(newGroup);
+    return res.json(group);
   } catch {
     return res.json({
       message: "Validation Error",
