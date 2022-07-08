@@ -20,7 +20,7 @@ module.exports = {
 
   async down (queryInterface, Sequelize) {
      await queryInterface.bulkDelete('Images', {
-      groupid: [1]
+      groupId: [1]
      });
   }
 };
