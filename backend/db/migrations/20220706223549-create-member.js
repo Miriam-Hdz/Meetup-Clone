@@ -17,9 +17,9 @@ module.exports = {
       organizer: {
         type: Sequelize.BOOLEAN
       },
-      memberId: {
+      userId: {
         type: Sequelize.INTEGER,
-        references: { model: 'Members' }
+        references: { model: 'Users' }
       },
       groupId: {
         type: Sequelize.INTEGER,

@@ -6,25 +6,25 @@ module.exports = {
     {
       status: 'member',
       organizer: true,
-      memberId: 1,
+      userId: 1,
       groupId: 1
     },
     {
       status: 'co-host',
       organizer: false,
-      memberId: 2,
+      userId: 2,
       groupId: 1
     },
     {
       status: 'member',
       organizer: false,
-      memberId: 3,
+      userId: 3,
       groupId: 1
     },
     {
       status: 'pending',
       organizer: false,
-      memberId: 4,
+      userId: 4,
       groupId: 1
     },
    ], {});

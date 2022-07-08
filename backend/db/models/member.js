@@ -16,10 +16,10 @@ module.exports = (sequelize, DataTypes) => {
   Member.init({
     status: DataTypes.STRING,
     organizer: DataTypes.BOOLEAN,
-    memberId: {
+    userId: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'Members',
+        model: 'Users',
         key: 'id'
       }
     },
