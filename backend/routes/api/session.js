@@ -81,17 +81,34 @@ router.get('/groups', async (req, res) => {
 
 router.post('/groups', async (req, res) => {
   const { name, about, type, private, city, state } = req.body;
-  const newGroup = await Group.create({
-    name: name,
-    about: about,
-    type: type,
-    private: private,
-    city: city,
-    state: state
-  });
 
-  res.status(201);
-  return res.json(newGroup);
+  try {
+    const newGroup = await Group.create({
+      name: name,
+      about: about,
+      type: type,
+      private: private,
+      city: city,
+      state: state
+    });
+
+    res.status(201);
+    return res.json(newGroup);
+  } catch {
+    return res.json({
+      message: "Validation Error",
+      statusCode: 400,
+      errors: {
+      name: "Name must be 60 characters or less",
+      about: "About must be 50 characters or more",
+      type: "Type must be Online or In person",
+      private: "Private must be a boolean",
+      city: "City is required",
+      state: "State is required",
+      }
+    });
+  }
 });
+
 
 module.exports = router;
