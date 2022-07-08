@@ -14,4 +14,18 @@ router.get('/', async (req, res) => {
     })
 });
 
+//get group by id
+router.get('/:groupId', async (req, res) => {
+    const id = req.params.groupId;
+    const groups = await Group.findAll({
+        where: {
+            id: id
+        }
+    });
+
+    return res.json({
+        Groups: groups
+    });
+});
+
 module.exports = router;
