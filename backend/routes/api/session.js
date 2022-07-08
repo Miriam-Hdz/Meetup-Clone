@@ -69,7 +69,6 @@ router.get(
   );
 
 //Get all Groups joined or organized by the Current User
-//user.id match member id and get groups that match groupId
 router.get('/groups', async (req, res) => {
   const { user } = req;
   const currentUser = await User.findByPk(user.id);
@@ -79,6 +78,7 @@ router.get('/groups', async (req, res) => {
 
 });
 
+//create new group
 router.post('/groups', async (req, res) => {
   const { name, about, type, private, city, state } = req.body;
   const { user } = req;
@@ -105,6 +105,7 @@ router.post('/groups', async (req, res) => {
     res.status(201);
     return res.json(group);
   } catch {
+    res.status(400);
     return res.json({
       message: "Validation Error",
       statusCode: 400,
@@ -120,5 +121,70 @@ router.post('/groups', async (req, res) => {
   }
 });
 
+//update group by current user if current user is the organizer
+router.put('/groups/:groupId', async (req, res) => {
+  const { user } = req;
+  const groupId = req.params.groupId;
+  const { name, about, type, private, city, state } = req.body;
+
+  try {
+    const groupToUpdate = await Group.findOne({
+      attributes: {exclude: ['numMembers']},
+      where: {
+        id: groupId
+      }
+    });
+
+    if (user.id === groupToUpdate.organizerId) {
+        groupToUpdate.set({
+          name: name,
+          about: about,
+          type: type,
+          private: private,
+          city: city,
+          state: state
+        });
+
+        await groupToUpdate.save();
+
+        const updatedGroup = await Group.findOne({
+          attributes: {exclude: ['numMembers']},
+          where: {
+            id: groupId
+          }
+        });
+
+        return res.json(updatedGroup);
+    } else {
+      return res.json({
+        message: "Must be group organizer to make changes"
+      });
+    }
+
+  } catch (error) {
+    if (error.message ===  "Cannot read properties of null (reading 'organizerId')") {
+      res.status(404);
+      return res.json({
+        message: "Group couldn't be found",
+        statusCode: 404
+      });
+    } else if (error.message === 'Validation error: Validation len on about failed') {
+      res.status(400);
+      return res.json({
+        message: "Validation Error",
+        statusCode: 400,
+        errors: {
+        name: "Name must be 60 characters or less",
+        about: "About must be 50 characters or more",
+        type: "Type must be Online or In person",
+        private: "Private must be a boolean",
+        city: "City is required",
+        state: "State is required"
+        }
+      });
+    }
+  }
+
+});
 
 module.exports = router;
