@@ -23,12 +23,30 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Group.init({
-    name: DataTypes.STRING,
-    about: DataTypes.STRING,
-    type: DataTypes.STRING,
+    name: DataTypes.STRING(60),
+    about: {
+      type: DataTypes.STRING,
+      validate: {
+        len: [50, 1000000]
+      }
+    },
+    type: {
+      type: DataTypes.STRING,
+      onlineOrInperson(value) {
+        if (value !== 'Online' || value!== 'In person') {
+          throw new Error("type must be Online or In person")
+        }
+      },
+    },
     private: DataTypes.BOOLEAN,
-    city: DataTypes.STRING,
-    state: DataTypes.STRING,
+    city: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    state: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     numMembers: DataTypes.INTEGER,
     organizerId: DataTypes.INTEGER
   }, {
