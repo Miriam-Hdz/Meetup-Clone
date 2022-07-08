@@ -79,4 +79,17 @@ router.get('/groups', async (req, res) => {
 
 });
 
+router.post('/groups', async (req, res) => {
+  const { name, about, type, private, city, state } = req.body;
+  const newGroup = await Group.create({
+    name: name,
+    about: about,
+    type: type,
+    private: private,
+    city: city,
+    state: state
+  });
+});
+
+
 module.exports = router;
