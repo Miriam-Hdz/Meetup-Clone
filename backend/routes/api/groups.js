@@ -3,6 +3,7 @@ const express = require('express');
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
 const { Group } = require('../../db/models');
 const { Member } = require('../../db/models');
+const { Image } = require('../../db/models');
 
 const router = express.Router();
 
@@ -21,6 +22,13 @@ router.get('/:groupId', async (req, res) => {
     const group = await Group.findOne({
         where: {
             id: id
+        }
+    });
+
+    const images = await Image.findAll({
+        attributes: ['url'],
+        where: {
+            groupId: id
         }
     });
 
@@ -43,6 +51,7 @@ router.get('/:groupId', async (req, res) => {
     } else {
         return res.json({
             Group: group,
+            images: images,
             Organizer: user
         });
     }

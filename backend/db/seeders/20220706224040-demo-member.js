@@ -32,7 +32,7 @@ module.exports = {
 
   async down (queryInterface, Sequelize) {
     await queryInterface.bulkDelete('Members', {
-      memberId: [1, 2, 3, 4]
+      userId: [1, 2, 3, 4]
     });
   }
 };
