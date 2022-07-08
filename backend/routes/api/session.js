@@ -184,7 +184,40 @@ router.put('/groups/:groupId', async (req, res) => {
       });
     }
   }
+});
 
+router.delete('/groups/:groupId', async (req, res) => {
+  const groupId = req.params.groupId;
+  const { user } = req;
+  const groupToDelete = await Group.findOne({
+    where: {
+      id: groupId
+    }
+  });
+
+  try {
+    if (user.id === groupToDelete.organizerId) {
+      await groupToDelete.destroy();
+
+      return res.json({
+        message: "Successfuly deleted",
+        statusCode: 200
+      });
+    } else {
+      return res.json({
+        message: "Must be organizer of group to delete"
+      });
+    }
+
+  } catch (error) {
+    if (error.message ===  "Cannot read properties of null (reading 'organizerId')") {
+      res.status(404);
+      return res.json({
+        message: "Group couldn't be found",
+        statusCode: 404
+      });
+    }
+  }
 });
 
 module.exports = router;
