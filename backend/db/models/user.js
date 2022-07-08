@@ -46,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       User.belongsToMany(
         models.Group,
-        { through: models.Member}
+        { through: models.Member, foreignKey: 'userId', otherKey: 'groupId'}
       );
     }
   }

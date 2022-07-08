@@ -68,6 +68,7 @@ router.get(
     }
   );
 
+  
 //Get all Groups joined or organized by the Current User
 router.get('/groups', async (req, res) => {
   const { user } = req;
