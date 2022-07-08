@@ -2,6 +2,8 @@ const express = require('express');
 
 const { setTokenCookie, restoreUser } = require('../../utils/auth');
 const { User } = require('../../db/models');
+const { Group } = require('../../db/models');
+
 
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
@@ -65,5 +67,16 @@ router.get(
       } else return res.json({});
     }
   );
+
+//Get all Groups joined or organized by the Current User
+//user.id match member id and get groups that match groupId
+router.get('/groups', async (req, res) => {
+  const { user } = req;
+  const currentUser = await User.findByPk(user.id);
+  const groups = await currentUser.getGroups();
+
+  return res.json({"Groups": groups})
+
+});
 
 module.exports = router;

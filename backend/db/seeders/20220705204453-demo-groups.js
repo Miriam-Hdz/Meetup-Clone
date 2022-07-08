@@ -10,8 +10,8 @@ module.exports = {
         private: true,
         city: "New York",
         state: "NY",
-        num_members: 10,
-        organizer_id: 1
+        numMembers: 10,
+        organizerId: 1
       }
     ], {});
   },
