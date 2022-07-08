@@ -2,6 +2,7 @@ const express = require('express');
 
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
 const { Group } = require('../../db/models');
+const { Member } = require('../../db/models');
 
 const router = express.Router();
 
@@ -14,18 +15,37 @@ router.get('/', async (req, res) => {
     })
 });
 
-//get group by id
+//get group and organizer by group id
 router.get('/:groupId', async (req, res) => {
     const id = req.params.groupId;
-    const groups = await Group.findAll({
+    const group = await Group.findOne({
         where: {
             id: id
         }
     });
 
-    return res.json({
-        Groups: groups
+    const member = await Member.findOne({
+        where: {
+            organizer: true
+        }
     });
+
+    const user = await member.getUser({
+        attributes: ['id', 'firstName', 'lastName'],
+    });
+
+    if (!group) {
+        res.status(404);
+        return res.json({
+            message: "Group couldn't be found",
+            statusCode: 404
+        });
+    } else {
+        return res.json({
+            Groups: group,
+            Organizer: user
+        });
+    }
 });
 
 module.exports = router;
