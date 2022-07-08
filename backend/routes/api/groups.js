@@ -42,7 +42,7 @@ router.get('/:groupId', async (req, res) => {
         });
     } else {
         return res.json({
-            Groups: group,
+            Group: group,
             Organizer: user
         });
     }
