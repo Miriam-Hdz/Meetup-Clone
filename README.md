@@ -522,7 +522,8 @@ Returns the members of a group specified by its id.
 * Request
   * Method: GET
   * URL: {
-    not logged in: /api/groups/:groupId/members, ---no "pending status" members
+    not logged in: /api/groups/:groupId/members ---no "pending status" members,
+    
     logged in: /api/session/groups/:groupId/members ---need to be logged in to have user info
     to determine whether to include "pending status" members or not
     }
