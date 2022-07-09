@@ -4,6 +4,7 @@ const { setTokenCookie, restoreUser, requireAuth } = require('../../utils/auth')
 const { User } = require('../../db/models');
 const { Group } = require('../../db/models');
 const { Member } = require('../../db/models');
+const { Op, UniqueConstraintError } = require('sequelize');
 
 
 const { check } = require('express-validator');
@@ -15,33 +16,49 @@ const validateLogin = [
   check('credential')
     .exists({ checkFalsy: true })
     .notEmpty()
-    .withMessage('Please provide a valid email or username.'),
+    .withMessage('Email is required'),
   check('password')
     .exists({ checkFalsy: true })
-    .withMessage('Please provide a password.'),
+    .withMessage('Password is required'),
   handleValidationErrors
 ];
 
 // Log in
 router.post(
   '/',
-  validateLogin,
   async (req, res, next) => {
     const { credential, password } = req.body;
     const user = await User.login({ credential, password });
 
+    if (credential === '' || password === '') {
+      res.status(400);
+      res.json({
+        message: "Validation error",
+        statusCode: 400,
+        errors: {
+          email: "Email is required",
+          password: "Password is required"
+        }
+      });
+      return next(err);
+    }
     if (!user) {
-      const err = new Error('Login failed');
-      err.status = 401;
-      err.title = 'Login failed';
-      err.errors = ['The provided credentials were invalid.'];
+      res.status(401);
+      res.json({
+        message: "Invalid credentials",
+        statusCode: 401
+      });
       return next(err);
     }
 
     await setTokenCookie(res, user);
 
     return res.json({
-      user
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      token: ""
     });
   }
 );
@@ -58,30 +75,35 @@ router.delete(
 // Restore session user
 router.get(
     '/',
-    restoreUser,
+    restoreUser, requireAuth,
     (req, res) => {
       const { user } = req;
       if (user) {
         return res.json({
-          user: user.toSafeObject()
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email
         });
-      } else return res.json({});
+      }
     }
   );
 
 
 //Get all Groups joined or organized by the Current User
-router.get('/groups', async (req, res) => {
+router.get('/groups', requireAuth, async (req, res) => {
+
   const { user } = req;
   const currentUser = await User.findByPk(user.id);
   const groups = await currentUser.getGroups();
+
 
   return res.json({"Groups": groups})
 
 });
 
 //create new group
-router.post('/groups', async (req, res) => {
+router.post('/groups', requireAuth, async (req, res) => {
   const { name, about, type, private, city, state } = req.body;
   const { user } = req;
 
@@ -106,6 +128,7 @@ router.post('/groups', async (req, res) => {
 
     res.status(201);
     return res.json(group);
+
   } catch {
     res.status(400);
     return res.json({
@@ -124,7 +147,7 @@ router.post('/groups', async (req, res) => {
 });
 
 //update group by current user if current user is the organizer
-router.put('/groups/:groupId', async (req, res) => {
+router.put('/groups/:groupId', requireAuth, async (req, res) => {
   const { user } = req;
   const groupId = req.params.groupId;
   const { name, about, type, private, city, state } = req.body;
@@ -158,8 +181,10 @@ router.put('/groups/:groupId', async (req, res) => {
 
         return res.json(updatedGroup);
     } else {
+      res.status(403);
       return res.json({
-        message: "Must be group organizer to make changes"
+        message: "Forbidden",
+        statusCode: 403
       });
     }
 
@@ -170,7 +195,7 @@ router.put('/groups/:groupId', async (req, res) => {
         message: "Group couldn't be found",
         statusCode: 404
       });
-    } else if (error.message === 'Validation error: Validation len on about failed') {
+    }
       res.status(400);
       return res.json({
         message: "Validation Error",
@@ -184,7 +209,6 @@ router.put('/groups/:groupId', async (req, res) => {
         state: "State is required"
         }
       });
-    }
   }
 });
 
@@ -206,8 +230,10 @@ router.delete('/groups/:groupId', async (req, res) => {
         statusCode: 200
       });
     } else {
+      res.status(403);
       return res.json({
-        message: "Must be organizer of group to delete"
+        message: "Forbidden",
+        statusCode: 403
       });
     }
 
@@ -225,53 +251,53 @@ router.delete('/groups/:groupId', async (req, res) => {
 //get all members of a group
 router.get('/groups/:groupId/members', async (req, res) => {
   const groupId = req.params.groupId;
-  const user = req;
+  const { user } = req;
   const group = await Group.findByPk(groupId);
 
-  try {
-    if (user.id === group.organizerId) {
-      const members = await Member.findAll({
+try {
+  if (user.id === group.organizerId) {
+    const members = await Member.findAll({
+      include: [
+          {model: User, attributes: ['id', 'firstName', 'lastName']}
+      ],
+      attributes: ['status'],
+      where: {
+          groupId: groupId
+      }
+    });
+
+    return res.json({
+      Members: members
+    });
+  } else {
+    const members = await Member.findAll({
         include: [
             {model: User, attributes: ['id', 'firstName', 'lastName']}
         ],
         attributes: ['status'],
         where: {
-            groupId: groupId
+            groupId: groupId,
+            status: {
+                [Op.or]: ['co-host', 'member']
+            }
         }
     });
 
-      return res.json({
+    return res.json({
         Members: members
-      });
-    } else {
-      const members = await Member.findAll({
-          include: [
-              {model: User, attributes: ['id', 'firstName', 'lastName']}
-          ],
-          attributes: ['status'],
-          where: {
-              groupId: groupId,
-              status: {
-                  [Op.or]: ['co-host', 'member']
-              }
-          }
-      });
-
-      return res.json({
-          Members: members
-      });
-
-    }
-
-  } catch (error) {
-    if (error.message ===  "Cannot read properties of null (reading 'organizerId')") {
-      res.status(404);
-      return res.json({
-        message: "Group couldn't be found",
-        statusCode: 404
-      });
-    }
+    });
   }
+
+} catch (error) {
+  if (error.message ===  "Cannot read properties of null (reading 'organizerId')") {
+    res.status(404);
+    return res.json({
+      message: "Group couldn't be found",
+      statusCode: 404
+    });
+  }
+}
+
 
 });
 

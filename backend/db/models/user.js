@@ -5,8 +5,8 @@ const bcrypt = require('bcryptjs');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     toSafeObject() {
-      const { id, username, email } = this; //context will be the User instance
-      return { id, username, email };
+      const { id, email } = this; //context will be the User instance
+      return { id, email };
     }
 
     validatePassword(password) {
@@ -21,10 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       const { Op } = require('sequelize');
       const user = await User.scope('loginUser').findOne({
         where: {
-          [Op.or]: {
-            username: credential,
             email: credential
-          }
         }
       });
       if (user && user.validatePassword(password)) {
@@ -32,11 +29,12 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
 
-    static async signup({ username, email, password }) {
+    static async signup({ email, firstName, lastName, password }) {
       const hashedPassword = bcrypt.hashSync(password);
       const user = await User.create({
-        username,
         email,
+        firstName,
+        lastName,
         hashedPassword
       });
       return await User.scope('currentUser').findByPk(user.id);
@@ -55,32 +53,20 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        len: [4, 30]
+        len: [1, 30]
       }
     },
     lastName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        len: [4, 30]
-      }
-    },
-    username: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-      validate: {
-        len: [4, 30],
-        isNotEmail(value) {
-          if (Validator.isEmail(value)) {
-            throw new Error('Cannot be an email.')
-          }
-        }
+        len: [1, 30]
       }
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
       validate: {
         len: [3, 256]
       }

@@ -41,11 +41,17 @@ module.exports = (sequelize, DataTypes) => {
     private: DataTypes.BOOLEAN,
     city: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        len: [1, 60]
+      }
     },
     state: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        len: [1, 60]
+      }
     },
     numMembers: DataTypes.INTEGER,
     organizerId: DataTypes.INTEGER

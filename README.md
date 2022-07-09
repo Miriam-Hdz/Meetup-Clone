@@ -340,7 +340,7 @@ Creates and returns a new group.
 * Require Authentication: true
 * Request
   * Method: POST
-  * URL: /api/groups
+  * URL: /api/session/groups
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -523,7 +523,7 @@ Returns the members of a group specified by its id.
   * Method: GET
   * URL: {
     not logged in: /api/groups/:groupId/members ---no "pending status" members,
-    
+
     logged in: /api/session/groups/:groupId/members ---need to be logged in to have user info
     to determine whether to include "pending status" members or not
     }
