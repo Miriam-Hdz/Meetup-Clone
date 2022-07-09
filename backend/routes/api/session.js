@@ -1,8 +1,9 @@
 const express = require('express');
 
-const { setTokenCookie, restoreUser } = require('../../utils/auth');
+const { setTokenCookie, restoreUser, requireAuth } = require('../../utils/auth');
 const { User } = require('../../db/models');
 const { Group } = require('../../db/models');
+const { Member } = require('../../db/models');
 
 
 const { check } = require('express-validator');
@@ -68,7 +69,7 @@ router.get(
     }
   );
 
-  
+
 //Get all Groups joined or organized by the Current User
 router.get('/groups', async (req, res) => {
   const { user } = req;
@@ -219,6 +220,59 @@ router.delete('/groups/:groupId', async (req, res) => {
       });
     }
   }
+});
+
+//get all members of a group
+router.get('/groups/:groupId/members', async (req, res) => {
+  const groupId = req.params.groupId;
+  const user = req;
+  const group = await Group.findByPk(groupId);
+
+  try {
+    if (user.id === group.organizerId) {
+      const members = await Member.findAll({
+        include: [
+            {model: User, attributes: ['id', 'firstName', 'lastName']}
+        ],
+        attributes: ['status'],
+        where: {
+            groupId: groupId
+        }
+    });
+
+      return res.json({
+        Members: members
+      });
+    } else {
+      const members = await Member.findAll({
+          include: [
+              {model: User, attributes: ['id', 'firstName', 'lastName']}
+          ],
+          attributes: ['status'],
+          where: {
+              groupId: groupId,
+              status: {
+                  [Op.or]: ['co-host', 'member']
+              }
+          }
+      });
+
+      return res.json({
+          Members: members
+      });
+
+    }
+
+  } catch (error) {
+    if (error.message ===  "Cannot read properties of null (reading 'organizerId')") {
+      res.status(404);
+      return res.json({
+        message: "Group couldn't be found",
+        statusCode: 404
+      });
+    }
+  }
+
 });
 
 module.exports = router;

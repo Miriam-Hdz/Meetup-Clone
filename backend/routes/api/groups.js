@@ -1,6 +1,5 @@
 const express = require('express');
 
-const { setTokenCookie, requireAuth } = require('../../utils/auth');
 const { Group } = require('../../db/models');
 const { Member } = require('../../db/models');
 const { Image } = require('../../db/models');
