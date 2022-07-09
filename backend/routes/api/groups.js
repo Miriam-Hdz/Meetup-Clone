@@ -4,6 +4,8 @@ const { setTokenCookie, requireAuth } = require('../../utils/auth');
 const { Group } = require('../../db/models');
 const { Member } = require('../../db/models');
 const { Image } = require('../../db/models');
+const { User } = require('../../db/models');
+const { Op } = require("sequelize");
 
 const router = express.Router();
 
@@ -60,6 +62,28 @@ router.get('/:groupId', async (req, res) => {
             });
         }
     }
+});
+
+//get all members of a group
+router.get('/:groupId/members', async (req, res) => {
+    const groupId = req.params.groupId;
+
+    const members = await Member.findAll({
+        include: [
+            {model: User, attributes: ['id', 'firstName', 'lastName']}
+        ],
+        attributes: ['status'],
+        where: {
+            groupId: groupId,
+            status: {
+                [Op.or]: ['co-host', 'member']
+            }
+        }
+    });
+
+    return res.json({
+        Members: members
+    });
 });
 
 module.exports = router;

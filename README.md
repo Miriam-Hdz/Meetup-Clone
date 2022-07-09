@@ -521,7 +521,11 @@ Returns the members of a group specified by its id.
 * Require Authentication: false
 * Request
   * Method: GET
-  * URL: /api/groups/:groupId/members
+  * URL: {
+    not logged in: /api/groups/:groupId/members, ---no "pending status" members
+    logged in: /api/session/groups/:groupId/members ---need to be logged in to have user info
+    to determine whether to include "pending status" members or not
+    }
   * Body: none
 
 * Successful Response: If you ARE the organizer of the group. Shows all
