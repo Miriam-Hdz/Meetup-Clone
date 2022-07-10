@@ -428,7 +428,6 @@ router.delete('/groups/:groupId/members/:memberId', requireAuth, async (req, res
         groupId: groupId
       }
     });
-    console.log(member);
 
     if (user.id === group.organizerId) {
       await member.destroy();
@@ -436,19 +435,19 @@ router.delete('/groups/:groupId/members/:memberId', requireAuth, async (req, res
       return res.json({
         message: "Successfully deleted membership from group"
       });
-    } else if (user.id === memberId) {
+    } else if (user.id === member.userId) {
       await member.destroy();
 
       return res.json({
         message: "Successfully deleted membership from group"
       });
     } else {
-      res.status(403);
-      return res.json({
-        message: "Forbidden",
-        statusCode: 403
-      });
-    }
+        res.status(403);
+        return res.json({
+          message: "Forbidden",
+          statusCode: 403
+        });
+      }
 
   } catch (error) {
     if (error.message ===  "Cannot read properties of null (reading 'organizerId')") {
