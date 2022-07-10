@@ -149,9 +149,9 @@ user's information.
 
     ```json
     {
+      "email": "john.smith@gmail.com",
       "firstName": "John",
       "lastName": "Smith",
-      "email": "john.smith@gmail.com",
       "password": "secret password"
     }
     ```

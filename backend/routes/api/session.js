@@ -212,7 +212,8 @@ router.put('/groups/:groupId', requireAuth, async (req, res) => {
   }
 });
 
-router.delete('/groups/:groupId', async (req, res) => {
+//organizer can delete group
+router.delete('/groups/:groupId', requireAuth, async (req, res) => {
   const groupId = req.params.groupId;
   const { user } = req;
   const groupToDelete = await Group.findOne({
