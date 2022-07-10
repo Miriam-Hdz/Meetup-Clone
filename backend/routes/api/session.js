@@ -457,7 +457,6 @@ router.delete('/groups/:groupId/members/:memberId', requireAuth, async (req, res
         statusCode: 404
       });
     }
-    return error.message;
   }
 
 });
