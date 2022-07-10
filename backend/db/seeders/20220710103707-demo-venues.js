@@ -16,7 +16,7 @@ module.exports = {
 
   async down (queryInterface, Sequelize) {
 
-    await queryInterface.bulkDelete('People', {
+    await queryInterface.bulkDelete('Venues', {
       address: ["123 Disney Lane"]
     });
   }
