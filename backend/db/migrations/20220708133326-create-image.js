@@ -22,7 +22,7 @@ module.exports = {
         },
         onDelete: 'cascade'
       },
-      venueId: {
+      eventId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'Events',
