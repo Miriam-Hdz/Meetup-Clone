@@ -409,8 +409,58 @@ router.put('/groups/:groupId/members/:memberId', requireAuth, async (req, res) =
         statusCode: 404
       });
     }
-    return error;
+    return error.message;
   }
+});
+
+//delete membership
+router.delete('/groups/:groupId/members/:memberId', requireAuth, async (req, res) => {
+
+  try{
+
+    const { user } = req;
+    const groupId = req.params.groupId;
+    const memberId = req.params.memberId;
+    const group = await Group.findByPk(groupId);
+    const member = await Member.findOne({
+      where: {
+        userId: memberId,
+        groupId: groupId
+      }
+    });
+    console.log(member);
+
+    if (user.id === group.organizerId) {
+      await member.destroy();
+
+      return res.json({
+        message: "Successfully deleted membership from group"
+      });
+    } else if (user.id === memberId) {
+      await member.destroy();
+
+      return res.json({
+        message: "Successfully deleted membership from group"
+      });
+    } else {
+      res.status(403);
+      return res.json({
+        message: "Forbidden",
+        statusCode: 403
+      });
+    }
+
+  } catch (error) {
+    if (error.message ===  "Cannot read properties of null (reading 'organizerId')") {
+      res.status(404);
+      return res.json({
+        message: "Group couldn't be found",
+        statusCode: 404
+      });
+    }
+    return error.message;
+  }
+
 });
 
 module.exports = router;
