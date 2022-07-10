@@ -26,4 +26,9 @@ router.get('/', async (req, res) => {
     return res.json({Events: events});
 });
 
+//get details of an event by id
+router.get('/api/events/:eventId', async (req, res) => {
+    
+});
+
 module.exports = router;
