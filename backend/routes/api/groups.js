@@ -6,6 +6,8 @@ const { Group } = require('../../db/models');
 const { Member } = require('../../db/models');
 const { Image } = require('../../db/models');
 const { User } = require('../../db/models');
+const { Event } = require('../../db/models');
+const { Venue } = require('../../db/models');
 const { Op } = require("sequelize");
 
 const router = express.Router();
@@ -136,6 +138,36 @@ router.post('/:groupId', requireAuth, async (req, res) => {
             });
         }
     }
+});
+
+//get all events of a group specified by its id
+router.get('/:groupId/events', async (req, res) => {
+        const groupId = req.params.groupId;
+        const group = await Group.findByPk(groupId);
+        console.log(group)
+        if (group) {
+            const events = await Event.findAll({
+                include: [
+                    {model: Group, attributes: ['id', 'name', 'city', 'state']},
+                    {model: Venue, attributes: ['id', 'city', 'state']}
+                ],
+                attributes: ['id', 'groupId', 'venueId', 'name', 'type', 'type', 'startDate', 'numAttending'],
+                where: {
+                    groupId: groupId
+                }
+
+            });
+
+            return res.json({Events: events});
+
+        } else if (!group) {
+            res.status(404);
+            return res.json({
+                message: "Group couldn't be found",
+                statusCode: 404
+            });
+        }
+
 });
 
 module.exports = router;
