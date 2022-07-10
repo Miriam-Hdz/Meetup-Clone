@@ -362,6 +362,31 @@ router.put('/groups/:groupId/members/:memberId', requireAuth, async (req, res) =
         message: "Current User must be the organizer to add a co-host",
         statusCode: 403
       });
+    } else if (user.id === group.organizerId && status === "co-host") {
+      const pendingMember = await Member.findOne({
+        where: {
+          groupId: groupId,
+          userId: memberId
+        }
+      });
+      if (!pendingMember) {
+        res.status(404);
+        return res.json({
+          message: "Membership between the user and the group does not exist",
+          statusCode: 404
+        });
+      } else {
+        pendingMember.status = "co-host";
+
+        await pendingMember.save();
+
+        return res.json({
+          id: pendingMember.id,
+          groupId: pendingMember.groupId,
+          memberId: pendingMember.userId,
+          status: pendingMember.status
+        });
+      }
     } else if ((user.id !== group.organizerId || user.id !== coHost.userId) && status === "member") {
       res.status(400);
       return res.json({
@@ -375,7 +400,6 @@ router.put('/groups/:groupId/members/:memberId', requireAuth, async (req, res) =
         statusCode: 400
       });
     }
-    return res.json({message: 'idk why not working'})
 
   } catch (error) {
     if (error.message ===  "Cannot read properties of null (reading 'organizerId')") {
