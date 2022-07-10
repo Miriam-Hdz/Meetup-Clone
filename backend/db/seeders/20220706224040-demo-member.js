@@ -4,7 +4,7 @@ module.exports = {
   async up (queryInterface, Sequelize) {
    await queryInterface.bulkInsert('Members', [
     {
-      status: 'member',
+      status: 'host',
       organizer: true,
       userId: 1,
       groupId: 1
@@ -36,4 +36,3 @@ module.exports = {
     });
   }
 };
-

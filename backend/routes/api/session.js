@@ -119,6 +119,19 @@ router.post('/groups', requireAuth, async (req, res) => {
       organizerId: user.id
     });
 
+    await Member.findOrCreate({
+      where: {
+        userId: user.id,
+        groupId: newGroup.id
+      },
+      defaults: {
+        status: "host",
+        organizer: true,
+        userId: user.id,
+        groupId: newGroup.id
+      }
+    });
+
     const group = await Group.findOne({
       attributes: {exclude: ['numMembers']},
       where: {

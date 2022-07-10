@@ -2,7 +2,7 @@
 
 ## Database Schema Design
 
-![alt text](./DBschema7.PNG)
+![alt text](./DBschema8.PNG)
 
 ## API Documentation
 
@@ -631,7 +631,7 @@ Request a new membership for a group specified by id.
     ```json
     {
       "groupId": 1,
-      "memberId": 2,
+      "userId": 2,
       "status": "pending"
     }
     ```
