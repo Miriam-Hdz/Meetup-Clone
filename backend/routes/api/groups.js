@@ -89,7 +89,7 @@ router.get('/:groupId/members', async (req, res) => {
 
 //request membership to group based on group's id
 router.post('/:groupId', requireAuth, async (req, res) => {
-    try {
+    // try {
 
         const { user } = req;
         const groupId = req.params.groupId;
@@ -126,16 +126,16 @@ router.post('/:groupId', requireAuth, async (req, res) => {
             });
         }
 
-    } catch(error) {
+//     } catch(error) {
 
-        if (error.message === "Cannot read properties of null (reading 'getUser')" || error.message === 'SQLITE_CONSTRAINT: FOREIGN KEY constraint failed') {
-            res.status(404);
-            return res.json({
-                message: "Group couldn't be found",
-                statusCode: 404
-            });
-        }
-    }
+//         if (error.message === "Cannot read properties of null (reading 'getUser')" || error.message === 'SQLITE_CONSTRAINT: FOREIGN KEY constraint failed') {
+//             res.status(404);
+//             return res.json({
+//                 message: "Group couldn't be found",
+//                 statusCode: 404
+//             });
+//         }
+//     }
 });
 
 module.exports = router;
