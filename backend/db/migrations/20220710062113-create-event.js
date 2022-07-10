@@ -1,21 +1,40 @@
 'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Images', {
+    await queryInterface.createTable('Events', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      imageableType: {
+      name: {
         type: Sequelize.STRING
       },
-      url: {
+      description: {
         type: Sequelize.STRING
+      },
+      type: {
+        type: Sequelize.STRING
+      },
+      capacity: {
+        type: Sequelize.INTEGER
+      },
+      price: {
+        type: Sequelize.DECIMAL
+      },
+      startDate: {
+        type: Sequelize.DATE
+      },
+      endDate: {
+        type: Sequelize.DATE
+      },
+      numAttending: {
+        type: Sequelize.INTEGER
       },
       groupId: {
         type: Sequelize.INTEGER,
+        allowNull: true,
         references: {
           model: 'Groups',
           key: 'id'
@@ -24,8 +43,9 @@ module.exports = {
       },
       venueId: {
         type: Sequelize.INTEGER,
+        allowNull: true,
         references: {
-          model: 'Events',
+          model: 'Venues',
           key: 'id'
         },
         onDelete: 'cascade'
@@ -33,16 +53,16 @@ module.exports = {
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Images');
+    await queryInterface.dropTable('Events');
   }
 };

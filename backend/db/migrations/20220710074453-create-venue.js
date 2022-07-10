@@ -1,31 +1,32 @@
 'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Images', {
+    await queryInterface.createTable('Venues', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      imageableType: {
+      address: {
         type: Sequelize.STRING
       },
-      url: {
+      city: {
         type: Sequelize.STRING
+      },
+      state: {
+        type: Sequelize.STRING
+      },
+      lat: {
+        type: Sequelize.DECIMAL
+      },
+      lng: {
+        type: Sequelize.DECIMAL
       },
       groupId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'Groups',
-          key: 'id'
-        },
-        onDelete: 'cascade'
-      },
-      venueId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'Events',
           key: 'id'
         },
         onDelete: 'cascade'
@@ -43,6 +44,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Images');
+    await queryInterface.dropTable('Venues');
   }
 };
