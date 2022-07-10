@@ -311,8 +311,82 @@ try {
     });
   }
 }
+});
 
+//change status of membership for a group
+router.put('/groups/:groupId/members/:memberId', requireAuth, async (req, res) => {
+  try {
 
+    const { user } = req;
+    const groupId = req.params.groupId;
+    const memberId = req.params.memberId;
+    const { status } = req.body;
+    const group = await Group.findByPk(groupId);
+    const coHost = Member.findOne({
+      where: {
+        groupId: groupId,
+        status: "co-host"
+      }
+    });
+
+    if ((user.id === group.organizerId || user.id === coHost.userId) && status === "member") {
+      const pendingMember = await Member.findOne({
+        where: {
+          groupId: groupId,
+          userId: memberId
+        }
+      });
+      if (!pendingMember) {
+        res.status(404);
+        return res.json({
+          message: "Membership between the user and the group does not exist",
+          statusCode: 404
+        });
+      } else {
+        pendingMember.status = "member";
+
+        await pendingMember.save();
+
+        return res.json({
+          id: pendingMember.id,
+          groupId: pendingMember.groupId,
+          memberId: pendingMember.userId,
+          status: pendingMember.status
+        });
+
+      }
+
+    } else if (user.id !== group.organizerId && status === "co-host") {
+      res.status(403);
+      return res.json({
+        message: "Current User must be the organizer to add a co-host",
+        statusCode: 403
+      });
+    } else if ((user.id !== group.organizerId || user.id !== coHost.userId) && status === "member") {
+      res.status(400);
+      return res.json({
+        message: "Current User must be the organizer or a co-host to make someone a member",
+        statusCode: 400
+      });
+    } else if (status === "pending") {
+      res.status(400);
+      return res.json({
+        message: "Cannot change a membership status to pending",
+        statusCode: 400
+      });
+    }
+    return res.json({message: 'idk why not working'})
+
+  } catch (error) {
+    if (error.message ===  "Cannot read properties of null (reading 'organizerId')") {
+      res.status(404);
+      return res.json({
+        message: "Group couldn't be found",
+        statusCode: 404
+      });
+    }
+    return error;
+  }
 });
 
 module.exports = router;
