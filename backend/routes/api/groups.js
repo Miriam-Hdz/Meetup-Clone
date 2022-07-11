@@ -170,4 +170,70 @@ router.get('/:groupId/events', async (req, res) => {
 
 });
 
+// create a new venue for a gorup
+router.post('/:groupId/venues', requireAuth, async (req, res) => {
+    try {
+
+        const { user } = req;
+        const { address, city, state, lat, lng } = req.body;
+        const groupId = req.params.groupId;
+        const group = await Group.findByPk(groupId);
+        const coHost = await Member.findOne({
+            where: {
+                groupId: groupId,
+                status: "co-host"
+            }
+        });
+
+        if ((user.id === group.organizerId) || (user.id === coHost.userId)) {
+            const newVenue = await Venue.create({
+                address: address,
+                city: city,
+                state: state,
+                lat: lat,
+                lng: lng,
+                groupId: groupId
+            });
+
+            return res.json({
+                id: newVenue.id,
+                groupId: newVenue.groupId,
+                address: newVenue.address,
+                city: newVenue.city,
+                state: newVenue.state,
+                lat: newVenue.lat,
+                lng: newVenue.lng
+            });
+        } else {
+            res.status(403);
+            return res.json({
+                message: "Forbidden",
+                statusCode: 403
+            });
+        }
+    } catch (error) {
+        if (error.message === "Cannot read properties of null (reading 'organizerId')") {
+            res.status(404);
+            return res.json({
+                message: "Group couldn't be found",
+                statusCode: 404
+            });
+        }
+        res.status(400);
+        return res.json({
+            message: "Validation error",
+            statusCode: 400,
+            errors: {
+            address: "Street address is required",
+            city: "City is required",
+            state: "State is required",
+            lat: "Latitude is not valid",
+            lng: "Longitude is not valid"
+            }
+        });
+
+    }
+
+});
+
 module.exports = router;

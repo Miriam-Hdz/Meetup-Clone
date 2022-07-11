@@ -9,19 +9,25 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       address: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(1, 50),
+        allowNull: false,
+        unique: true
       },
       city: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(1, 50),
+        allowNull: false
       },
       state: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(2, 2),
+        allowNull: false
       },
       lat: {
-        type: Sequelize.DECIMAL
+        type: Sequelize.DECIMAL,
+        allowNull: false
       },
       lng: {
-        type: Sequelize.DECIMAL
+        type: Sequelize.DECIMAL,
+        allowNull: false
       },
       groupId: {
         type: Sequelize.INTEGER,

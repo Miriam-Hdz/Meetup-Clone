@@ -22,11 +22,54 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Venue.init({
-    address: DataTypes.STRING,
-    city: DataTypes.STRING,
-    state: DataTypes.STRING,
-    lat: DataTypes.DECIMAL,
-    lng: DataTypes.DECIMAL,
+    address: {
+      type: DataTypes.STRING(1, 50),
+      allowNull: false,
+      unique: true,
+      validate: {
+        beginsWithNum(value) {
+          if (isNaN(value[0])) {
+            throw new Error("Must be a valid address")
+          }
+        }
+      }
+    },
+    city: {
+      type: DataTypes.STRING(1, 50),
+      allowNull: false
+    },
+    state: {
+      type: DataTypes.STRING(2, 2),
+      allowNull: false
+    },
+    lat: {
+      type: DataTypes.DECIMAL,
+      allowNull: false,
+      validate: {
+        checkDecimalPlaces(value) {
+          const string = value.toString();
+          const array = string.split('.');
+
+          if (array[1].length !== 7) {
+            throw new Error("Must be valid lat")
+          }
+        }
+      }
+    },
+    lng: {
+      type: DataTypes.DECIMAL,
+      allowNull: false,
+      validate: {
+        checkDecimalPlaces(value) {
+          const string = value.toString();
+          const array = string.split('.');
+
+          if (array[1].length !== 7) {
+            throw new Error("Must be valid lng")
+          }
+        }
+      }
+      },
     groupId: {
       type: DataTypes.INTEGER,
       references: {
