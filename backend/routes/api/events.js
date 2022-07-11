@@ -463,4 +463,52 @@ router.delete('/:eventId/attendees/:attendeeId', requireAuth, async (req, res) =
     }
 });
 
+//add an image to event
+router.post('/:eventId/images', requireAuth, async (req, res) => {
+    try {
+        const {user} = req;
+        const eventId = req.params.eventId;
+        const event = await Event.findByPk(eventId);
+        const {url} = req.body;
+        const attendance = await Attendee.findOne({
+            where: {
+                userId: user.id,
+                eventId: eventId
+            }
+        });
+
+        if (user.id === attendance.userId) {
+            const newImage = await Image.create({
+                url: url,
+                groupId: event.groupId,
+                eventId: eventId,
+                imageableType: "event",
+                imageableId: user.id
+            });
+
+            return res.json({
+                id: newImage.id,
+                imageableType: newImage.imageableType,
+                url: newImage.url,
+                imageableId: newImage.imageableId
+            });
+        } else {
+            res.status(403);
+            return res.json({
+                message: "Forbidden",
+                statusCode: 403
+            });
+        }
+
+    } catch (error) {
+        if (error.message === "Cannot read properties of null (reading 'organizerId')") {
+            res.status(404);
+            return res.json({
+                message: "Event couldn't be found",
+                statusCode: 404
+            });
+        }
+    }
+});
+
 module.exports = router;

@@ -8,12 +8,14 @@ module.exports = {
     {
       imageableType: 'group',
       url: 'image url 1',
-      groupId: 1
+      groupId: 1,
+      imageableId: 1
     },
     {
       imageableType: 'group',
       url: 'image url 2',
-      groupId: 1
+      groupId: 1,
+      imageableId: 1
     }
    ]);
   },
@@ -24,4 +26,3 @@ module.exports = {
      });
   }
 };
-

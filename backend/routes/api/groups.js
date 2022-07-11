@@ -326,13 +326,15 @@ router.post('/:groupId/images', requireAuth, async (req, res) => {
                 url: url,
                 groupId: groupId,
                 eventId: null,
-                imageableType: "group"
+                imageableType: "group",
+                imageableId: user.id
             });
 
             return res.json({
                 id: newImage.id,
                 imageableType: newImage.imageableType,
-                url: newImage.url
+                url: newImage.url,
+                imageableId: newImage.imageableId
             });
         } else {
             res.status(403);
