@@ -116,6 +116,12 @@ try {
             startDate: updatedEvent.startDate,
             endDate: updatedEvent.endDate
         });
+    } else {
+        res.status(403);
+        return res.json({
+            message: "Forbidden",
+            statusCode: 403
+        });
     }
 
 } catch (error) {
