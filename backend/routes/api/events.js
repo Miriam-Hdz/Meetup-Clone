@@ -72,7 +72,7 @@ router.get('/:eventId', async (req, res) => {
 
 //edit an event by id
 router.put('/:eventId', requireAuth, async (req, res) => {
-// try {
+try {
     const { user } = req;
     const eventId = req.params.eventId;
     const event = await Event.findByPk(eventId);
@@ -124,37 +124,37 @@ router.put('/:eventId', requireAuth, async (req, res) => {
         });
     }
 
-// } catch (error) {
-//     if (error.message === "Cannot read properties of null (reading 'groupId')") {
-//         res.status(404);
-//         return res.json({
-//             message: "Event couldn't be found",
-//             statusCode: 404
-//         });
-//     } else if (error.message === "SQLITE_CONSTRAINT: FOREIGN KEY constraint failed") {
-//         res.status(404);
-//             return res.json({
-//                 message: "Venue couldn't be found",
-//                 statusCode: 404
-//             });
-//     } else {
-//         res.status(400);
-//         return res.json({
-//             message: "Validation error",
-//             statusCode: 400,
-//             errors: {
-//               venueId: "Venue does not exist",
-//               name: "Name must be at least 5 characters",
-//               type: "Type must be Online or In person",
-//               capacity: "Capacity must be an integer",
-//               price: "Price is invalid",
-//               description: "Description is required",
-//               startDate: "Start date must be in the future",
-//               endDate: "End date is less than start date",
-//             }
-//           });
-//     }
-// }
+} catch (error) {
+    if (error.message === "Cannot read properties of null (reading 'groupId')") {
+        res.status(404);
+        return res.json({
+            message: "Event couldn't be found",
+            statusCode: 404
+        });
+    } else if ((error.message === "SQLITE_CONSTRAINT: FOREIGN KEY constraint failed") || (error.message === 'insert or update on table "Events" violates foreign key constraint "Events_venueId_fkey"')) {
+        res.status(404);
+            return res.json({
+                message: "Venue couldn't be found",
+                statusCode: 404
+            });
+    } else {
+        res.status(400);
+        return res.json({
+            message: "Validation error",
+            statusCode: 400,
+            errors: {
+              venueId: "Venue does not exist",
+              name: "Name must be at least 5 characters",
+              type: "Type must be Online or In person",
+              capacity: "Capacity must be an integer",
+              price: "Price is invalid",
+              description: "Description is required",
+              startDate: "Start date must be in the future",
+              endDate: "End date is less than start date",
+            }
+          });
+    }
+}
 });
 
 module.exports = router;
