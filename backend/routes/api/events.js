@@ -354,7 +354,7 @@ router.get('/:eventId/attendees', async (req, res) => {
 
 //change status of an attendance
 router.put('/:eventId/attendees/:attendeeId', requireAuth, async (req, res) => {
-    try {
+    // try {
         const {user} = req;
         const { userId, status } = req.body;
         const attendeeId = req.params.attendeeId;
@@ -414,15 +414,15 @@ router.put('/:eventId/attendees/:attendeeId', requireAuth, async (req, res) => {
             });
         }
 
-    } catch (error) {
-        if (error.message === "Cannot read properties of null (reading 'groupId')" || error.message === 'column "UserId" does not exist') {
-            res.status(404);
-            return res.json({
-                message: "Event couldn't be found",
-                statusCode: 404
-            });
-        }
-    }
+    // } catch (error) {
+    //     if (error.message === "Cannot read properties of null (reading 'groupId')" || error.message === 'column "UserId" does not exist') {
+    //         res.status(404);
+    //         return res.json({
+    //             message: "Event couldn't be found",
+    //             statusCode: 404
+    //         });
+    //     }
+    // }
 
 });
 
