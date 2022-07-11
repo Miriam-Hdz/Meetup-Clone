@@ -202,6 +202,91 @@ router.delete('/:eventId', requireAuth, async (req, res) => {
     }
 });
 
+//request attendance to event by event id
+router.post('/:eventId', requireAuth, async (req, res) => {
+    try {
+        const { user } = req;
+        const eventId = req.params.eventId;
+        const event = await Event.findByPk(eventId);
+        const member = await Member.findOne({
+            where: {
+                userId: user.id
+            }
+        });
+        const attendee = await Attendee.findOne({
+            where: {
+                eventId: eventId
+            }
+        });
+
+        if (attendee) {
+            if (attendee.status === "pending") {
+                res.status(400);
+                return res.json({
+                    message: "Attendance has already been requested"
+                });
+            } else if (attendee.status === "member") {
+                res.status(400);
+                return res.json({
+                    message: "User is already an attendee of the event",
+                    statusCode: 400
+                });
+            }
+        } else if ((member.groupId === event.groupId) && (member.status === "member")) {
+            const newAttendee = await Attendee.create({
+                status: "pending",
+                userId: user.id,
+                eventId: eventId
+            });
+
+            return res.json({
+                eventId: newAttendee.eventId,
+                userId: newAttendee.userId,
+                status: newAttendee.status
+            });
+        } else if ((member.groupId === event.groupId) && (member.status === "host")) {
+            const newAttendee = await Attendee.create({
+                status: "pending",
+                userId: user.id,
+                eventId: eventId
+            });
+
+            return res.json({
+                eventId: newAttendee.eventId,
+                userId: newAttendee.userId,
+                status: newAttendee.status
+            });
+        } else if ((member.groupId === event.groupId) && (member.status === "co-host")) {
+            const newAttendee = await Attendee.create({
+                status: "pending",
+                userId: user.id,
+                eventId: eventId
+            });
+
+            return res.json({
+                eventId: newAttendee.eventId,
+                userId: newAttendee.userId,
+                status: newAttendee.status
+            });
+        } else {
+            res.status(403);
+            return res.json({
+                message: "Forbidden",
+                statusCode: 403
+            });
+        }
+
+    } catch (error) {
+        if (error.message === "Cannot read properties of null (reading 'groupId')") {
+            res.status(404);
+            return res.json({
+                message: "Event couldn't be found",
+                statusCode: 404
+            });
+        }
+    }
+});
+
 //get all attendees of an event by id
 router.get('/:eventId/attendees', async (req, res) => {
     try {
