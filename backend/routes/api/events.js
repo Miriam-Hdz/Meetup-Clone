@@ -204,7 +204,7 @@ router.delete('/:eventId', requireAuth, async (req, res) => {
 
 //request attendance to event by event id
 router.post('/:eventId', requireAuth, async (req, res) => {
-    // try {
+    try {
         const { user } = req;
         const eventId = req.params.eventId;
         const event = await Event.findByPk(eventId);
@@ -276,13 +276,13 @@ router.post('/:eventId', requireAuth, async (req, res) => {
             });
         }
 
-    // } catch (error) {
-    //     res.status(404);
-    //     return res.json({
-    //         message: "Event couldn't be found",
-    //         statusCode: 404
-    //     });
-    // }
+    } catch (error) {
+        res.status(404);
+        return res.json({
+            message: "Event couldn't be found",
+            statusCode: 404
+        });
+    }
 });
 
 //get all attendees of an event by id
@@ -350,6 +350,80 @@ router.get('/:eventId/attendees', async (req, res) => {
             });
         }
     }
+});
+
+//change status of an attendance
+router.put('/:eventId/attendees/:attendeeId', requireAuth, async (req, res) => {
+    try {
+        const {user} = req;
+        const { userId, status } = req.body;
+        const attendeeId = req.params.attendeeId;
+        const attendance = await Attendee.findByPk(attendeeId);
+        const eventId = req.params.eventId;
+        const event = await Event.findByPk(eventId);
+        const groupId = event.groupId
+
+
+        const host = await Member.findOne({
+            where: {
+                groupId: groupId,
+                status: "host"
+            }
+        });
+
+        const coHost = await Member.findOne({
+            where: {
+                groupId: groupId,
+                status: "co-host"
+            }
+        });
+
+        if (!attendance) {
+            res.status(404);
+            return res.json({
+                message: "Attendance between the user and the event does not exist",
+                statusCode: 404
+            });
+        } else if (((user.id === host.userId) || (user.id === coHost.userId)) && status === "member") {
+            attendance.status = "member";
+            await attendance.save();
+
+            const updatedAttendee = await Attendee.findOne({
+                where: {
+                    userId: userId
+                }
+            });
+
+            return res.json({
+                id: updatedAttendee.id,
+                eventId: updatedAttendee.eventId,
+                userId: updatedAttendee.userId,
+                status: updatedAttendee.status
+            });
+        } else if (status === "pending") {
+            res.status(400);
+            return res.json({
+                message: "Cannot change attendance status to pending",
+                statusCode: 400
+            });
+        } else {
+            res.status(403);
+            return res.json({
+                message: "Forbidden",
+                statusCode: 403
+            });
+        }
+
+    } catch (error) {
+        if (error.message === "Cannot read properties of null (reading 'groupId')") {
+            res.status(404);
+            return res.json({
+                message: "Event couldn't be found",
+                statusCode: 404
+            });
+        }
+    }
+
 });
 
 module.exports = router;
