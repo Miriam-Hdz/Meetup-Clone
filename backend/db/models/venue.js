@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Venue.init({
     address: {
-      type: DataTypes.STRING(1, 50),
+      type: DataTypes.VARCHAR(1, 50),
       allowNull: false,
       unique: true,
       validate: {
@@ -35,11 +35,11 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     city: {
-      type: DataTypes.STRING(1, 50),
+      type: DataTypes.VARCHAR(1, 50),
       allowNull: false
     },
     state: {
-      type: DataTypes.STRING(2, 2),
+      type: DataTypes.VARCHAR(2, 2),
       allowNull: false
     },
     lat: {
