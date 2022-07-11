@@ -67,7 +67,7 @@ router.put('/:venueId', requireAuth, async (req, res) => {
         if (error.message === "Cannot read properties of null (reading 'groupId')") {
             res.status(404);
             return res.json({
-                message: "Group couldn't be found",
+                message: "Venue couldn't be found",
                 statusCode: 404
             });
         }

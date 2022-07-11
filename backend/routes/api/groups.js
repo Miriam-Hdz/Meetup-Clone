@@ -144,7 +144,6 @@ router.post('/:groupId', requireAuth, async (req, res) => {
 router.get('/:groupId/events', async (req, res) => {
         const groupId = req.params.groupId;
         const group = await Group.findByPk(groupId);
-        console.log(group)
         if (group) {
             const events = await Event.findAll({
                 include: [
@@ -232,6 +231,84 @@ router.post('/:groupId/venues', requireAuth, async (req, res) => {
             }
         });
 
+    }
+
+});
+
+//create an event for group specified by group id
+router.post('/:groupId/events', requireAuth, async (req, res) => {
+    try {
+        const { user } = req;
+        const groupId = req.params.groupId;
+        const { venueId, name, type, capacity, price, description, startDate, endDate } = req.body;
+        const group = await Group.findByPk(groupId);
+        const coHost = await Member.findOne({
+            where: {
+                groupId: groupId,
+                status: "co-host"
+            }
+        });
+        const venue = Venue.findByPk(venueId);
+
+
+        if ((user.id === group.organizerId) || (user.id === coHost.userId)) {
+            const newEvent = await Event.create({
+                venueId: venueId,
+                name: name,
+                type: type,
+                capacity: capacity,
+                price: price,
+                description: description,
+                startDate: startDate,
+                endDate: endDate,
+                groupId: groupId
+            });
+
+            console.log(newEvent)
+
+            return res.json({
+                id: newEvent.id,
+                groupId: groupId,
+                venueId: newEvent.venueId,
+                name: newEvent.name,
+                type: newEvent.type,
+                capacity: newEvent.capacity,
+                price: newEvent.price,
+                description: newEvent.description,
+                startDate: newEvent.startDate,
+                endDate: newEvent.endDate
+            });
+        } else {
+            res.status(403);
+            return res.json({
+                message: "Forbidden",
+                statusCode: 403
+            });
+        }
+    } catch (error) {
+        if (error.message === "Cannot read properties of null (reading 'organizerId')") {
+            res.status(404);
+            return res.json({
+                message: "Group couldn't be found",
+                statusCode: 404
+            });
+        } else {
+            res.status(400);
+            return res.json({
+                message: "Validation error",
+                statusCode: 400,
+                errors: {
+                  venueId: "Venue does not exist",
+                  name: "Name must be at least 5 characters",
+                  type: "Type must be Online or In person",
+                  capacity: "Capacity must be an integer",
+                  price: "Price is invalid",
+                  description: "Description is required",
+                  startDate: "Start date must be in the future",
+                  endDate: "End date is less than start date",
+                }
+              });
+        }
     }
 
 });

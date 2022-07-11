@@ -9,32 +9,39 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT(5, 50),
+        allowNull: false
       },
       description: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT(1, 1000),
+        allowNull: false
       },
       type: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT,
+        allowNull: false
       },
       capacity: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
       price: {
-        type: Sequelize.DECIMAL
+        type: Sequelize.DECIMAL(4, 2),
+        allowNull: false
       },
       startDate: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
       endDate: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
       numAttending: {
         type: Sequelize.INTEGER
       },
       groupId: {
         type: Sequelize.INTEGER,
-        allowNull: true,
+        allowNull: false,
         references: {
           model: 'Groups',
           key: 'id'
@@ -43,7 +50,6 @@ module.exports = {
       },
       venueId: {
         type: Sequelize.INTEGER,
-        allowNull: true,
         references: {
           model: 'Venues',
           key: 'id'
