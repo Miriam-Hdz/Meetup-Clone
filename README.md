@@ -1628,7 +1628,7 @@ Delete an attendance to an event specified by id.
   the user whose attendance is being deleted
 * Request
   * Method: DELETE
-  * URL: /api/attendees/:attendeeId
+  * URL: /api/events/:eventId/attendees/:attendeeId
   * Headers:
     * Content-Type: application/json
   * Body: none

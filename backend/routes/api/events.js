@@ -354,7 +354,7 @@ router.get('/:eventId/attendees', async (req, res) => {
 
 //change status of an attendance
 router.put('/:eventId/attendees/:attendeeId', requireAuth, async (req, res) => {
-    // try {
+    try {
         const {user} = req;
         const { userId, status } = req.body;
         const attendeeId = req.params.attendeeId;
@@ -362,7 +362,6 @@ router.put('/:eventId/attendees/:attendeeId', requireAuth, async (req, res) => {
         const eventId = req.params.eventId;
         const event = await Event.findByPk(eventId);
         const groupId = event.groupId
-    console.log(groupId)
         const host = await Member.findOne({
             where: {
                 groupId: groupId,
@@ -413,16 +412,55 @@ router.put('/:eventId/attendees/:attendeeId', requireAuth, async (req, res) => {
             });
         }
 
-    // } catch (error) {
-    //     if (error.message === "Cannot read properties of null (reading 'groupId')" || error.message === 'column "UserId" does not exist') {
-    //         res.status(404);
-    //         return res.json({
-    //             message: "Event couldn't be found",
-    //             statusCode: 404
-    //         });
-    //     }
-    // }
+    } catch (error) {
+        if (error.message === "Cannot read properties of null (reading 'groupId')") {
+            res.status(404);
+            return res.json({
+                message: "Event couldn't be found",
+                statusCode: 404
+            });
+        }
+    }
 
+});
+
+//delete attendance by id
+router.delete('/:eventId/attendees/:attendeeId', requireAuth, async (req, res) => {
+    try {
+        const {user} = req;
+        const attendeeId = req.params.attendeeId;
+        const attendance = await Attendee.findByPk(attendeeId);
+        const eventId = req.params.eventId;
+        const event = await Event.findByPk(eventId);
+        const group = await Group.findOne({
+            where: {
+                id: event.groupId
+            }
+        });
+
+        if ((user.id === group.organizerId) || (user.id === attendance.userId)) {
+            await attendance.destroy();
+
+            return res.json({
+                message: "Seccessfully deleted attendance from event",
+            });
+        } else {
+            res.status(403);
+            return res.json({
+                message: "Forbidden",
+                statusCode: 403
+            });
+        }
+
+    } catch (error) {
+        if (error.message === "Cannot read properties of null (reading 'groupId')") {
+            res.status(404);
+            return res.json({
+                message: "Event couldn't be found",
+                statusCode: 404
+            });
+        }
+    }
 });
 
 module.exports = router;
