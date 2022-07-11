@@ -163,7 +163,6 @@ router.delete('/:eventId', requireAuth, async (req, res) => {
         const { user } = req;
         const eventId = req.params.eventId;
         const event = await Event.findByPk(eventId);
-        const { venueId, name, type, capacity, price, description, startDate, endDate} = req.body;
         const host = await Member.findOne({
             where: {
                 groupId: event.groupId,
@@ -197,7 +196,8 @@ router.delete('/:eventId', requireAuth, async (req, res) => {
             return res.json({
                 message: "Event couldn't be found",
                 statusCode: 404
-            });
+           });
+        }
     }
 });
 
