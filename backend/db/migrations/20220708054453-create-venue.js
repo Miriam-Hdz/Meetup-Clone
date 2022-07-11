@@ -9,16 +9,16 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       address: {
-        type: Sequelize.VARCHAR(1, 50),
+        type: Sequelize.TEXT(1, 50),
         allowNull: false,
         unique: true
       },
       city: {
-        type: Sequelize.VARCHAR(1, 50),
+        type: Sequelize.TEXT(1, 50),
         allowNull: false
       },
       state: {
-        type: Sequelize.VARCHAR(2, 2),
+        type: Sequelize.TEXT(2, 2),
         allowNull: false
       },
       lat: {
