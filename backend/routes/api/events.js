@@ -289,7 +289,7 @@ router.post('/:eventId', requireAuth, async (req, res) => {
 
 //get all attendees of an event by id
 router.get('/:eventId/attendees', async (req, res) => {
-    try {
+    // try {
         const { user } = req;
         const eventId = req.params.eventId;
         const event = await Event.findByPk(eventId);
@@ -343,15 +343,15 @@ router.get('/:eventId/attendees', async (req, res) => {
             });
         }
 
-    } catch (error) {
-        if (error.message === "Cannot read properties of null (reading 'groupId')") {
-            res.status(404);
-            return res.json({
-                message: "Event couldn't be found",
-                statusCode: 404
-            });
-        }
-    }
+    // } catch (error) {
+    //     if (error.message === "Cannot read properties of null (reading 'groupId')") {
+    //         res.status(404);
+    //         return res.json({
+    //             message: "Event couldn't be found",
+    //             statusCode: 404
+    //         });
+    //     }
+    // }
 });
 
 module.exports = router;
