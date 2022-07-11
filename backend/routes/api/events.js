@@ -8,6 +8,7 @@ const { Image } = require('../../db/models');
 const { User } = require('../../db/models');
 const { Venue } = require('../../db/models');
 const { Event } = require('../../db/models');
+const { Attendee } = require('../../db/models');
 const { Op } = require("sequelize");
 
 const router = express.Router();
@@ -197,6 +198,73 @@ router.delete('/:eventId', requireAuth, async (req, res) => {
                 message: "Event couldn't be found",
                 statusCode: 404
            });
+        }
+    }
+});
+
+//get all attendees of an event by id
+router.get('/:eventId/attendees', async (req, res) => {
+    try {
+        const { user } = req;
+        const eventId = req.params.eventId;
+        const event = await Event.findByPk(eventId);
+        const host = await Member.findOne({
+            where: {
+                groupId: event.groupId,
+                status: "host"
+            }
+        });
+        const coHost = await Member.findOne({
+            where: {
+                groupId: event.groupId,
+                status: "co-host"
+            }
+        });
+        if (user) {
+            if ((user.id === host.userId) || (user.id === coHost.userId)) {
+                const users = await User.findAll({
+                    include: {
+                        model: Attendee,
+                        attributes: ['status'],
+                        where: {
+                            eventId: eventId
+                        }
+                    },
+                    attributes: ['id', 'firstName', 'lastName']
+                });
+
+                return res.json({
+                    Attendees: users
+                });
+
+            }
+        } else {
+            const users = await User.findAll({
+                include: {
+                    model: Attendee,
+                    attributes: ['status'],
+                    where: {
+                        eventId: eventId,
+                        status: {
+                            [Op.or]: ['waitlist', 'member']
+                        }
+                    }
+                },
+                attributes: ['id', 'firstName', 'lastName']
+            });
+
+            return res.json({
+                Attendees: users
+            });
+        }
+
+    } catch (error) {
+        if (error.message === "Cannot read properties of null (reading 'groupId')") {
+            res.status(404);
+            return res.json({
+                message: "Event couldn't be found",
+                statusCode: 404
+            });
         }
     }
 });

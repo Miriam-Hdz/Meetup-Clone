@@ -22,7 +22,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Member.init({
-    status: DataTypes.STRING,
+    status: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     organizer: DataTypes.BOOLEAN,
     userId: {
       type: DataTypes.INTEGER,

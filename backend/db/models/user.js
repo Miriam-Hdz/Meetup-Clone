@@ -46,6 +46,10 @@ module.exports = (sequelize, DataTypes) => {
         models.Group,
         { through: models.Member, foreignKey: 'userId', otherKey: 'groupId'}
       );
+      User.hasMany(
+        models.Attendee,
+        {foreignKey: 'userId', onDelete: 'CASCADE', hooks: true}
+      );
     }
   }
   User.init({
