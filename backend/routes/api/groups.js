@@ -313,4 +313,44 @@ router.post('/:groupId/events', requireAuth, async (req, res) => {
 
 });
 
+//add an image to group
+router.post('/:groupId/images', requireAuth, async (req, res) => {
+    try {
+        const {user} = req;
+        const groupId = req.params.groupId;
+        const group = await Group.findByPk(groupId);
+        const {url} = req.body;
+
+        if (user.id === group.organizerId) {
+            const newImage = await Image.create({
+                url: url,
+                groupId: groupId,
+                eventId: null,
+                imageableType: "group"
+            });
+
+            return res.json({
+                id: newImage.id,
+                imageableType: newImage.imageableType,
+                url: newImage.url
+            });
+        } else {
+            res.status(403);
+            return res.json({
+                message: "Forbidden",
+                statusCode: 403
+            });
+        }
+
+    } catch (error) {
+        if (error.message === "Cannot read properties of null (reading 'organizerId')") {
+            res.status(404);
+            return res.json({
+                message: "Group couldn't be found",
+                statusCode: 404
+            });
+        }
+    }
+});
+
 module.exports = router;

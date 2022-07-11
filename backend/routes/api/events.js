@@ -426,7 +426,7 @@ router.put('/:eventId/attendees/:attendeeId', requireAuth, async (req, res) => {
 
 //delete attendance by id
 router.delete('/:eventId/attendees/:attendeeId', requireAuth, async (req, res) => {
-    // try {
+    try {
         const {user} = req;
         const attendeeId = req.params.attendeeId;
         const attendance = await Attendee.findByPk(attendeeId);
@@ -452,15 +452,15 @@ router.delete('/:eventId/attendees/:attendeeId', requireAuth, async (req, res) =
             });
         }
 
-    // } catch (error) {
-    //     if (error.message === "Cannot read properties of null (reading 'groupId')") {
-    //         res.status(404);
-    //         return res.json({
-    //             message: "Event couldn't be found",
-    //             statusCode: 404
-    //         });
-    //     }
-    // }
+    } catch (error) {
+        if (error.message === "Cannot read properties of null (reading 'groupId')") {
+            res.status(404);
+            return res.json({
+                message: "Event couldn't be found",
+                statusCode: 404
+            });
+        }
+    }
 });
 
 module.exports = router;
