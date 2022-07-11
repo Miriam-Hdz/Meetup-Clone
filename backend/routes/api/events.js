@@ -157,4 +157,48 @@ try {
 }
 });
 
+//delete event by id
+router.delete('/:eventId', requireAuth, async (req, res) => {
+    try {
+        const { user } = req;
+        const eventId = req.params.eventId;
+        const event = await Event.findByPk(eventId);
+        const { venueId, name, type, capacity, price, description, startDate, endDate} = req.body;
+        const host = await Member.findOne({
+            where: {
+                groupId: event.groupId,
+                status: "host"
+            }
+        });
+        const coHost = await Member.findOne({
+            where: {
+                groupId: event.groupId,
+                status: "co-host"
+            }
+        });
+
+        if ((user.id === host.userId) || (user.id === coHost.userId)) {
+            await event.destroy();
+
+            return res.json({
+                message: "Successfully deleted"
+            });
+        } else {
+            res.status(403);
+            return res.json({
+                message: "Forbidden",
+                statusCode: 403
+            });
+        }
+
+    } catch (error) {
+        if (error.message === "Cannot read properties of null (reading 'groupId')") {
+            res.status(404);
+            return res.json({
+                message: "Event couldn't be found",
+                statusCode: 404
+            });
+    }
+});
+
 module.exports = router;
