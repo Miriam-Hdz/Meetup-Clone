@@ -1553,7 +1553,7 @@ Change the status of an attendance for an event specified by id.
   have a membership to the group with the status of "co-host"
 * Request
   * Method: PUT
-  * URL: /api/attendees/:attendeeId
+  * URL: /api/events/:eventId/attendees/:attendeeId
   * Headers:
     * Content-Type: application/json
   * Body:
